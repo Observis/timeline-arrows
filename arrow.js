@@ -218,10 +218,10 @@ export default class Arrow {
     }
 
 
-    addArrow (dep) {
+    addArrow (dep, skipRedraw) {
         this._dependency.push(dep);
         this._createPath();
-        this._timeline.redraw();
+        !skipRedraw && this._timeline.redraw();
     }
 
     getArrow (id) {
