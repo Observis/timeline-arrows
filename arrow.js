@@ -38,6 +38,14 @@ export default class Arrow {
             "http://www.w3.org/2000/svg",
             "path"
         );
+        this._secondaryArrowHead = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "marker"
+        );
+        this._secondaryArrowHeadPath = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "path"
+        );
         
         this._dependency = dependencies;
 
@@ -66,11 +74,27 @@ export default class Arrow {
         this._arrowHead.setAttribute("markerWidth", "3");
         this._arrowHead.setAttribute("markerHeight", "3");
         this._arrowHead.setAttribute("orient", "auto");
+
+        this._secondaryArrowHead.setAttribute("id", "arrowhead1");
+        this._secondaryArrowHead.setAttribute("viewBox", "-10 -5 10 10");
+        this._secondaryArrowHead.setAttribute("refX", "-7");
+        this._secondaryArrowHead.setAttribute("refY", "0");
+        this._secondaryArrowHead.setAttribute("markerUnits", "strokeWidth");
+        this._secondaryArrowHead.setAttribute("markerWidth", "3");
+        this._secondaryArrowHead.setAttribute("markerHeight", "3");
+        this._secondaryArrowHead.setAttribute("orient", "auto");
+
         //Configure the path of the arrowHead (arrowHeadPath)
         this._arrowHeadPath.setAttribute("d", "M 0 0 L -10 -5 L -7.5 0 L -10 5 z");
         this._arrowHeadPath.style.fill = "#9c0000";
         this._arrowHead.appendChild(this._arrowHeadPath);
+
+        this._secondaryArrowHeadPath.setAttribute("d", "M 0 0 L -10 -5 L -7.5 0 L -10 5 z");
+        this._secondaryArrowHeadPath.style.fill = "#009c00";
+        this._secondaryArrowHead.appendChild(this._secondaryArrowHeadPath);
+
         this._svg.appendChild(this._arrowHead);
+        this._svg.appendChild(this._secondaryArrowHead);
         //Create paths for the started dependency array
         for (let i = 0; i < this._dependency.length; i++) {
             this._createPath();
@@ -83,14 +107,14 @@ export default class Arrow {
 
     }
     
-    _createPath(){
+    _createPath(useSecondaryStyle){
         //Add a new path to array dependencyPath and to svg
         let somePath = document.createElementNS(
             "http://www.w3.org/2000/svg",
             "path"
           );
           somePath.setAttribute("d", "M 0 0");
-          somePath.style.stroke = "#9c0000";
+          somePath.style.stroke = useSecondaryStyle ? "#009c00" : "#9c0000";
           somePath.style.strokeWidth = "3px";
           somePath.style.fill = "none";
           somePath.style.pointerEvents = "auto";
@@ -163,7 +187,8 @@ export default class Arrow {
             }
           }
           item_2.left -= 10; // Space for the arrowhead.
-          this._dependencyPath[index].setAttribute("marker-end", "url(#arrowhead0)");
+          const arrowUrl = dep.secondary_style ? "url(#arrowhead1)" : "url(#arrowhead0)";
+          this._dependencyPath[index].setAttribute("marker-end", arrowUrl);
           this._dependencyPath[index].setAttribute(
           "d",
           "M " +
@@ -220,7 +245,7 @@ export default class Arrow {
 
     addArrow (dep, skipRedraw) {
         this._dependency.push(dep);
-        this._createPath();
+        this._createPath(dep.secondary_style);
         !skipRedraw && this._timeline.redraw();
     }
 
